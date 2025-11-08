@@ -1,4 +1,4 @@
-# Selective RAG MVP - 専門性粒度に応じたRAG自動選択システム
+# Selective RAG - 専門性粒度に応じたRAG自動選択システム
 
 ## 概要
 
