@@ -6,18 +6,38 @@
 
 ### システム構成
 
-```
-質問 → Selective Agent → 粒度判定 → RAG選択
-                           ↓
-                    Fine-grained (細かい粒度)
-                    具体的・数値的・詳細
-                           ↓
-                    ColBERT RAG (トークンレベル)
-                           ↓
-                    Coarse-grained (粗い粒度)
-                    概念的・抽象的・全体像
-                           ↓
-                    Naive RAG (文レベル)
+```mermaid
+graph TB
+    Start([User Question]) --> Agent[Selective Agent]
+    
+    Agent --> Judge{Granularity Detection}
+    
+    Judge -->|Fine-grained| Fine[Select ColBERT RAG]
+    Judge -->|Coarse-grained| Coarse[Select Naive RAG]
+    
+    Fine --> ColBERT[ColBERT RAG]
+    Coarse --> Naive[Naive RAG]
+    
+    ColBERT --> ColData[(Knowledge Base)]
+    Naive --> NaiveData[(Knowledge Base)]
+    
+    ColData --> ColRetrieve[Detailed Search]
+    NaiveData --> NaiveRetrieve[Overview Search]
+    
+    ColRetrieve --> Generate[LLM Response Generation]
+    NaiveRetrieve --> Generate
+    
+    Generate --> End([Return Answer])
+    
+    style Start fill:#e1f5e1
+    style End fill:#e1f5e1
+    style Agent fill:#fff4e1
+    style Judge fill:#ffe1e1
+    style Fine fill:#e1e5ff
+    style Coarse fill:#e1e5ff
+    style ColBERT fill:#d4e1ff
+    style Naive fill:#d4e1ff
+    style Generate fill:#f0e1ff
 ```
 
 ## 狙い・目的
@@ -123,6 +143,38 @@ python colbert_rag_module.py
 ```
 
 ## Selective Agentの仕組み
+
+```mermaid
+graph TB
+    Input([Question Input]) --> LLM{LLM Detection}
+    
+    LLM -->|Success| LLMResult[Granularity Result]
+    LLM -->|Failure| Rule[Rule-based Detection]
+    
+    Rule --> Keywords{Keyword Scoring}
+    
+    Keywords -->|High Score| FineKeywords[Fine Detection]
+    Keywords -->|Low Score| CoarseKeywords[Coarse Detection]
+    
+    LLMResult --> Decision{Granularity Result}
+    FineKeywords --> Decision
+    CoarseKeywords --> Decision
+    
+    Decision -->|Fine-grained| SelectColBERT[Select ColBERT RAG]
+    Decision -->|Coarse-grained| SelectNaive[Select Naive RAG]
+    
+    SelectColBERT --> Output([Return RAG System])
+    SelectNaive --> Output
+    
+    style Input fill:#e1f5e1
+    style Output fill:#e1f5e1
+    style LLM fill:#fff4e1
+    style Rule fill:#ffe1e1
+    style Keywords fill:#ffe1e1
+    style Decision fill:#f0e1ff
+    style SelectColBERT fill:#d4e1ff
+    style SelectNaive fill:#d4e1ff
+```
 
 ### 判定方法
 
