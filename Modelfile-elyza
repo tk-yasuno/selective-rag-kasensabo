@@ -1,0 +1,17 @@
+# Ollama用Modelfile
+FROM C:/Users/yasun/LangChain/learning-langchain/kasensabo-raptor/models/ELYZA-japanese-Llama-2-7b-safetensors
+
+TEMPLATE """{{ .System }}
+
+### 指示:
+{{ .Prompt }}
+
+### 応答:
+"""
+
+PARAMETER temperature 0.5
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.2
+PARAMETER num_ctx 2048
+
+SYSTEM """あなたは河川砂防ダム技術の専門家です。技術基準に基づいて、正確かつ簡潔に回答してください。"""
