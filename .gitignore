@@ -5,6 +5,9 @@ models/
 # Base code directory (embedded git repository)
 base-code-enhanced-treg-raptor/
 
+# Log backup directory
+0_LogBAK/
+
 # Python
 __pycache__/
 *.py[cod]
